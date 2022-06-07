@@ -1,53 +1,50 @@
 import 'package:flutter/material.dart';
 
+import 'config.dart';
+
 enum GenderList { male, female }
 
-const CatSrc = 'assets/images/q19898.jpg';
-
 class MyFormState extends State {
+  @override
+  void initState() {
+    super.initState();
+    currentTheme.addListener(() {
+      setState(() {});
+    });
+  }
+
+
   final _formKey = GlobalKey<FormState>();
   GenderList _gender = GenderList.female;
   bool _dryfood = false;
   bool _wetfood = false;
   bool _naturalfood = false;
 
-  Widget _catName() {
+  Widget _inputField(String a, String b) {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
         child: Column(children: [
-          const Text(
-            'Кличка питомца:',
+          Text(
+            a,
             style: TextStyle(fontSize: 20.0),
           ),
           TextFormField(
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Пожалуйста введите кличку питомца';
-                }
-              },
-              style: TextStyle(fontSize: 20.0)),
-        ]),
-      ),
-    );
-  }
-
-  Widget _catBreed() {
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(children: [
-          const Text(
-            'Порода питомца:',
-            style: TextStyle(fontSize: 20.0),
+            textAlign: TextAlign.center,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return b;
+              } else if (a == 'Контактный E-mail:' &&
+                  ((!value.contains('@')) || (!value.contains('.')))) {
+                return 'E-mail должен иметь вид ***@***.***';
+              }
+            },
+            style: const TextStyle(fontSize: 20.0),
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              //hintText: 'Кличка',
+            ),
           ),
-          TextFormField(
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Пожалуйста введите породу питомца';
-                }
-              },
-              style: TextStyle(fontSize: 20.0)),
         ]),
       ),
     );
@@ -56,7 +53,7 @@ class MyFormState extends State {
   Widget _catSex() {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
         child: Column(children: [
           const Text(
             'Пол питомца:',
@@ -91,8 +88,9 @@ class MyFormState extends State {
 
   Widget _catFeed() {
     return Card(
+      //color: const Color(0xFFeeeeee),
       child: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
         child: Column(children: [
           const Text(
             'Корм:',
@@ -100,19 +98,19 @@ class MyFormState extends State {
           ),
           CheckboxListTile(
               value: _dryfood,
-              activeColor: Colors.deepPurpleAccent,
+              activeColor: Colors.deepPurple,
               title: const Text('Сухой', style: TextStyle(fontSize: 20.0)),
               controlAffinity: ListTileControlAffinity.leading,
               onChanged: (bool? value) => setState(() => _dryfood = value!)),
           CheckboxListTile(
               value: _wetfood,
-              activeColor: Colors.deepPurpleAccent,
+              activeColor: Colors.deepPurple,
               title: const Text('Влажный', style: TextStyle(fontSize: 20.0)),
               controlAffinity: ListTileControlAffinity.leading,
               onChanged: (bool? value) => setState(() => _wetfood = value!)),
           CheckboxListTile(
               value: _naturalfood,
-              activeColor: Colors.deepPurpleAccent,
+              activeColor: Colors.deepPurple,
               title:
                   const Text('Натуральный', style: TextStyle(fontSize: 20.0)),
               controlAffinity: ListTileControlAffinity.leading,
@@ -123,115 +121,80 @@ class MyFormState extends State {
     );
   }
 
-  Widget _ownerName() {
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(children: [
-          const Text(
-            'Имя:',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          TextFormField(
-              validator: (value) {
-                if (value!.isEmpty) return 'Пожалуйста введите свое имя';
-              },
-              style: TextStyle(fontSize: 20.0)),
-        ]),
-      ),
-    );
-  }
-
-  Widget _ownerEmail() {
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(children: [
-          const Text(
-            'Контактный E-mail:',
-            style: TextStyle(fontSize: 20.0),
-          ),
-          TextFormField(
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Пожалуйста введите свой E-mail';
-                }
-                if ((!value.contains('@')) || (!value.contains('.'))) {
-                  return 'E-mail должен иметь вид ***@***.***';
-                }
-              },
-              style: TextStyle(fontSize: 20.0)),
-        ]),
-      ),
-    );
-  }
-
   Widget _finalButton() {
-    return Card(
-      child: RaisedButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            Color color = Colors.red;
-            String text;
-
-            if (_gender == null) {
-              text = 'Выберите пол питомца';
-            } else if (_dryfood == false &&
-                _wetfood == false &&
-                _naturalfood == false) {
-              text = 'Укажите вид корма';
-            } else {
-              text = 'Форма успешно заполнена';
-              color = Colors.blueAccent;
-            }
-
-            Scaffold.of(context).showSnackBar(SnackBar(
-              content: Text(text),
-              backgroundColor: color,
-            ));
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          Color color = Colors.red;
+          String text;
+          if (_gender == null) {
+            text = 'Выберите пол питомца';
+          } else if (_dryfood == false &&
+              _wetfood == false &&
+              _naturalfood == false) {
+            text = 'Укажите вид корма';
+          } else {
+            text = 'Форма успешно заполнена';
+            color = Colors.teal;
           }
-        },
-        child: const Text('Сохранить',
-            style: TextStyle(fontWeight: FontWeight.bold)),
-        color: const Color(0xFF673AB7),
-        textColor: Colors.white,
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: color,
+              content: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+            ),
+          );
+        }
+      },
+      child: const Text(
+        'Сохранить',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
       ),
+
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(CatSrc),
-            opacity: 1.0,
-            fit: BoxFit.cover,
-          ),
-        ),
         padding: EdgeInsets.all(10.0),
         child: Form(
-          key: _formKey,
-          child: ListView(children: <Widget>[
-            const Text(
-              'Питомец',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10.0),
-            _catName(),
-            _catBreed(),
-            _catSex(),
-            _catFeed(),
-            const Text(
-              'Контактные данные владельца',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10.0),
-            _ownerName(),
-            _ownerEmail(),
-            _finalButton(),
-          ]),
-        ));
+            key: _formKey,
+            child: ListView.builder(
+                itemCount: 1,
+                itemBuilder: (context, int index) {
+                  return Column(children: [
+                    const Text(
+                      'Питомец',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 22.0, fontWeight: FontWeight.bold),
+                    ),
+                    _inputField(
+                        'Кличка питомца', 'Пожалуйста введите кличку питомца'),
+                    _inputField(
+                        'Порода питомца', 'Пожалуйста введите породу питомца'),
+                    _catSex(),
+                    _catFeed(),
+                    const Text(
+                      'Контактные данные владельца',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 22.0, fontWeight: FontWeight.bold),
+                    ),
+                    _inputField('Имя', 'Пожалуйста введите своё имя'),
+                    _inputField(
+                        'Контактный E-mail:', 'Пожалуйста введите свой E-mail'),
+                    _finalButton(),
+                  ]);
+                })));
   }
 }
